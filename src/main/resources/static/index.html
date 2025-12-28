@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOIR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="text-gray-900 bg-gray-50/50">
+
+<nav class="sticky top-2 z-50 px-4 md:px-6 mb-6 md:mb-8 mt-2">
+    <div class="container mx-auto bg-white/90 backdrop-blur-md border border-gray-200 shadow-sm rounded-full px-6 py-4 flex justify-between items-center">
+        <div class="text-lg md:text-xl font-bold tracking-widest flex items-center gap-2">
+            <div class="w-3 h-3 bg-black rounded-full"></div> NOIR.
+        </div>
+        <div class="space-x-4 md:space-x-6 font-medium text-xs md:text-sm">
+            <a href="index.html" class="text-black border-b-2 border-black pb-1">Loja</a>
+            <a href="orders.html" class="text-gray-400 hover:text-black transition-colors">Pedidos</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container mx-auto px-4 md:px-6 pb-12 flex flex-col lg:flex-row gap-8">
+
+    <div class="flex-1">
+
+        <div class="bg-white p-2 pl-4 pr-2 mb-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col md:flex-row gap-3 md:items-center">
+            <input type="text" id="searchInput" placeholder="Buscar..." class="flex-1 bg-transparent text-sm placeholder-gray-400 py-2 outline-none">
+
+            <div class="hidden md:block h-6 w-px bg-gray-200"></div>
+
+            <div class="flex justify-between items-center gap-4">
+                <select id="categoryFilter" class="bg-transparent text-sm cursor-pointer font-medium text-gray-600 hover:text-black outline-none w-full md:w-auto">
+                    <option value="">Todas</option>
+                </select>
+
+                <div class="bg-gray-100 rounded-full px-4 py-2 flex items-center gap-2 cursor-pointer shrink-0">
+                    <input type="checkbox" id="activeToggle" checked class="accent-black w-4 h-4 cursor-pointer">
+                    <label for="activeToggle" class="text-[10px] font-bold cursor-pointer select-none tracking-wider">ATIVOS</label>
+                </div>
+            </div>
+        </div>
+
+        <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+        </div>
+    </div>
+
+    <div class="w-full lg:w-96 mt-4 lg:mt-0">
+        <div class="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-xl shadow-gray-100 border border-gray-100 lg:sticky lg:top-28">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-bold text-xl">Carrinho</h2>
+                <span id="cartCount" class="bg-black text-white text-[10px] font-bold px-2 py-1 rounded-full">0</span>
+            </div>
+
+            <div id="cartItems" class="space-y-4 mb-8 max-h-[300px] md:max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                <div class="flex flex-col items-center justify-center py-10 text-gray-300 border-2 border-dashed border-gray-100 rounded-2xl">
+                    <span class="text-sm">Vazio</span>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-100 pt-6 space-y-4">
+                <div class="flex justify-between items-end">
+                    <span class="text-gray-400 text-xs font-bold uppercase tracking-wider">Total</span>
+                    <span id="cartTotal" class="text-2xl font-bold tracking-tight">R$ 0,00</span>
+                </div>
+
+                <input type="number" id="customerId" value="1" placeholder="ID Cliente" class="w-full bg-gray-50 border border-transparent focus:bg-white focus:border-gray-200 rounded-2xl px-4 py-3 text-center text-sm transition-all outline-none">
+                <button onclick="checkout()" class="w-full bg-black text-white py-4 rounded-2xl font-bold hover:bg-gray-800 active:scale-95 transition-all shadow-lg shadow-gray-200">Finalizar</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="js/shop.js"></script>
+</body>
+</html>
