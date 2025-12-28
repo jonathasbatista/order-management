@@ -116,3 +116,6 @@ A API segue os padrões REST. Abaixo estão os principais endpoints identificado
 
 3.  **Integridade Referencial no Código:**
     Validações manuais no Service (como verificar se o produto está ativo antes da venda) garantem que as regras de negócio sejam respeitadas antes de qualquer persistência no banco.
+
+4. **Observabilidade via Logs:**
+   A aplicação não falha silenciosamente. Exceções tratadas e fluxos importantes de negócio geram logs no console, permitindo que o desenvolvedor entenda o comportamento do sistema em tempo real sem precisar de debug constante.
