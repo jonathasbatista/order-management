@@ -1,4 +1,4 @@
-# 🛒 NOIR - Sistema de Gestão de Pedidos
+# 🛒 OrderHub - Sistema de Gestão de Pedidos
 
 ![Java](https://img.shields.io/badge/Java-21%2B-orange)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.x-green)
@@ -11,7 +11,7 @@
 
 ## 📸 Visão Geral
 
-O **NOIR** é uma aplicação completa que simula o fluxo de compras de uma loja virtual. O projeto foi desenvolvido para demonstrar a integração robusta entre um backend RESTful em **Java/Spring Boot** e um frontend moderno e leve utilizando **JavaScript Puro (Vanilla)** e **Tailwind CSS**.
+O **OrderHub** é uma aplicação completa que simula o fluxo de compras de uma loja virtual. O projeto foi desenvolvido para demonstrar a integração robusta entre um backend RESTful em **Java/Spring Boot** e um frontend moderno e leve utilizando **JavaScript Puro (Vanilla)** e **Tailwind CSS**.
 
 O sistema gerencia todo o ciclo de vida do pedido: desde a seleção de produtos no carrinho, passando pela criação do pedido no banco de dados, até o processamento de pagamentos e atualização automática de status.
 
