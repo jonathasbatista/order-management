@@ -46,4 +46,8 @@ public class OrderModel {
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 }

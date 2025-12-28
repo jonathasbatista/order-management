@@ -4,6 +4,7 @@
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.x-green)
 ![SQLite](https://img.shields.io/badge/Database-SQLite-blue)
 ![Tailwind CSS](https://img.shields.io/badge/Frontend-Tailwind_CSS-38bdf8)
+![JUnit 5](https://img.shields.io/badge/Tests-JUnit_5-2EA44F)
 
 > Um sistema Full Stack para gestão de pedidos de e-commerce, focando em integridade de dados, performance e uma interface minimalista de alto contraste.
 
@@ -32,6 +33,10 @@ O sistema gerencia todo o ciclo de vida do pedido: desde a seleção de produtos
 * **Processamento de Pagamentos:** Endpoint dedicado para registrar pagamentos parciais ou totais.
 * **Máquina de Estados:** O sistema calcula automaticamente se o valor pago cobre o total do pedido, atualizando o status de `NEW` para `PAID`.
 
+#### 🛡️ Qualidade e Observabilidade
+* **Logs Estruturados:** Implementação de logs (INFO, ERROR, WARN) em pontos chave do sistema para rastreamento de requisições, diagnósticos de erros e auditoria de transações.
+* **Testes Unitários:** Suíte de testes automatizados cobrindo Services e regras de negócio críticas, garantindo estabilidade nas manutenções futuras.
+
 ---
 
 ## 🚀 Tecnologias Utilizadas
@@ -41,6 +46,8 @@ O sistema gerencia todo o ciclo de vida do pedido: desde a seleção de produtos
 * **Spring Boot 4**: Framework para configuração e injeção de dependências.
 * **Spring Data JPA**: Camada de persistência e abstração de repositórios.
 * **SQLite**: Banco de dados relacional (configurado no `application.properties`) para facilidade de execução e portabilidade.
+* **JUnit 5 & Mockito**: Frameworks para testes unitários e mocks.
+* **SLF4J**: Abstração para logging.
 * **Maven**: Gerenciamento de dependências e build.
 
 ### Frontend (Client)
@@ -73,6 +80,14 @@ O sistema gerencia todo o ciclo de vida do pedido: desde a seleção de produtos
 
 3.  **Acesse a Aplicação:**
     Abra o navegador em: `http://localhost:8080/index.html`
+
+### 🧪 Executando os Testes
+
+Para garantir que todas as regras de negócio estão funcionando corretamente e verificar a integridade do código, execute a suíte de testes unitários:
+
+```bash
+./mvnw test
+```
 
 ---
 

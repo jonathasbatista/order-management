@@ -62,4 +62,7 @@ public class ProductModel implements Serializable {
         this.priceCents = priceCents;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
