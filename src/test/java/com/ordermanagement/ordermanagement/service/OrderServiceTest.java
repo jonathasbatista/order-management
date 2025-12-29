@@ -43,13 +43,8 @@ class OrderServiceTest {
         when(productRepository.findById(1L)).thenReturn(Optional.of(inactiveProduct));
         when(orderRepository.save(any())).thenReturn(new OrderModel());
 
-        CreateOrderDTO.CreateOrderItemDTO itemDTO = new CreateOrderDTO.CreateOrderItemDTO();
-        itemDTO.setProductId(1L);
-        itemDTO.setQuantity(1);
-
-        CreateOrderDTO orderDTO = new CreateOrderDTO();
-        orderDTO.setCustomerId(1L);
-        orderDTO.setItems(List.of(itemDTO));
+        CreateOrderDTO.CreateOrderItemDTO itemDTO = new CreateOrderDTO.CreateOrderItemDTO(1L, 1);
+        CreateOrderDTO orderDTO = new CreateOrderDTO(1L, List.of(itemDTO));
 
         assertThrows(RuntimeException.class, () -> orderService.createOrder(orderDTO));
     }

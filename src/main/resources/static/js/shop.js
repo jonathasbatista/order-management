@@ -17,7 +17,9 @@ async function loadProducts() {
         products = await res.json();
         setupCategories();
         renderGrid();
-    } catch (e) { console.error(e); }
+    } catch (e) {
+    console.error(e);
+    }
 }
 
 function setupCategories() {
@@ -54,8 +56,7 @@ function renderGrid() {
 
             <div class="mt-auto pt-4 flex justify-between items-center">
                 <span class="text-xl font-bold tracking-tight">${formatCurrency(p.priceCents)}</span>
-                <button onclick="addToCart(${p.id})" ${!p.active ? 'disabled' : ''}
-                    class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center hover:scale-110 active:scale-90 transition-transform disabled:bg-gray-200 disabled:cursor-not-allowed">
+                <button onclick="addToCart(${p.id})" ${!p.active ? 'disabled' : ''} class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center hover:scale-110 active:scale-90 transition-transform disabled:bg-gray-200 disabled:cursor-not-allowed">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                 </button>
             </div>
@@ -75,9 +76,15 @@ function addToCart(id) {
 
 function updateQty(id, delta) {
     const item = cart.find(i => i.id === id);
-    if (!item) return;
+    if (!item) {
+        return;
+    }
+
     item.qty += delta;
-    if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+
+    if (item.qty <= 0) {
+        cart = cart.filter(i => i.id !== id);
+    }
     renderCart();
 }
 
@@ -120,7 +127,9 @@ function renderCart() {
 
 async function checkout() {
     const cid = document.getElementById('customerId').value;
-    if (!cid || cart.length === 0) return alert("Carrinho vazio ou Cliente inválido.");
+    if (!cid || cart.length === 0){
+     return alert("Carrinho vazio ou Cliente inválido.");
+    }
 
     const body = {
         customerId: parseInt(cid),

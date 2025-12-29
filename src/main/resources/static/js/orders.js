@@ -4,7 +4,9 @@ let currentId = null;
 document.addEventListener('DOMContentLoaded', () => {
     loadList();
     const params = new URLSearchParams(window.location.search);
-    if(params.get('id')) selectOrder(params.get('id'));
+    if(params.get('id')){
+     selectOrder(params.get('id'));
+    }
 });
 
 const formatCurrency = (val) => (val / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -17,8 +19,12 @@ async function loadList() {
 
         document.getElementById('ordersList').innerHTML = list.map(o => {
             let statusStyle = "bg-gray-100 text-gray-500 border-gray-200";
-            if (o.status === 'PAID') statusStyle = "bg-black text-white border-black";
-            if (o.status === 'CANCELED') statusStyle = "bg-transparent text-gray-300 line-through border-transparent";
+            if (o.status === 'PAID') {
+                statusStyle = "bg-black text-white border-black";
+            }
+            if (o.status === 'CANCELED') {
+                statusStyle = "bg-transparent text-gray-300 line-through border-transparent";
+            }
 
             return `
             <div onclick="selectOrder(${o.id})" class="p-4 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all border border-transparent hover:border-gray-100 group">
@@ -50,9 +56,15 @@ async function selectOrder(id) {
         badge.innerText = data.order.status;
 
         badge.className = "px-4 py-2 rounded-full text-xs font-bold tracking-widest border uppercase ";
-        if(data.order.status === 'PAID') badge.className += "bg-black text-white border-black shadow-lg shadow-gray-200";
-        else if(data.order.status === 'CANCELED') badge.className += "bg-gray-50 text-gray-400 border-gray-100 line-through";
-        else badge.className += "bg-white text-black border-gray-200";
+        if(data.order.status === 'PAID'){
+            badge.className += "bg-black text-white border-black shadow-lg shadow-gray-200";
+        }
+        else if(data.order.status === 'CANCELED'){
+            badge.className += "bg-gray-50 text-gray-400 border-gray-100 line-through";
+        }
+        else{
+            badge.className += "bg-white text-black border-gray-200";
+        }
 
         document.getElementById('orderItems').innerHTML = data.items.map(i => `
             <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
@@ -75,7 +87,9 @@ async function selectOrder(id) {
 
 async function pay() {
     const val = document.getElementById('payAmount').value;
-    if(!val) return;
+    if(!val){
+        return;
+    }
 
     try {
         const res = await fetch(`${API_URL}/payments`, {

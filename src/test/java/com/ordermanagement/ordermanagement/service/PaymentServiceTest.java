@@ -55,9 +55,7 @@ class PaymentServiceTest {
 
         when(paymentRepository.findByOrderId(1L)).thenReturn(List.of(currentPayment));
 
-        PaymentDTO paymentDTO = new PaymentDTO();
-        paymentDTO.setOrderId(1L);
-        paymentDTO.setAmountCents(5000);
+        PaymentDTO paymentDTO = new PaymentDTO(1L, 5000, "PIX");
 
         paymentService.registerPayment(paymentDTO);
 
