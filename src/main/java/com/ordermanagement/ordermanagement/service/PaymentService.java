@@ -9,6 +9,8 @@ import com.ordermanagement.ordermanagement.repository.OrderItemsRepository;
 import com.ordermanagement.ordermanagement.repository.OrderRepository;
 import com.ordermanagement.ordermanagement.repository.PaymentRepository;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ import java.util.List;
 
 @Service
 public class PaymentService {
+
+    private static final Logger log = LoggerFactory.getLogger(PaymentService.class);
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -28,19 +32,26 @@ public class PaymentService {
 
     @Transactional
     public PaymentModel registerPayment(PaymentDTO dto) {
+        log.info("Iniciando processamento de pagamento para o Pedido ID: {}", dto.orderId());
 
-        OrderModel order = orderRepository.findById(dto.getOrderId())
-                .orElseThrow(() -> new RuntimeException("Pedido não encontrado: " + dto.getOrderId()));
+        OrderModel order = orderRepository.findById(dto.orderId())
+                .orElseThrow(() -> {
+                    log.error("Erro ao registrar pagamento: Pedido {} não encontrado.", dto.orderId());
+                    return new RuntimeException("Pedido não encontrado: " + dto.orderId());
+                });
 
         if (order.getStatus() == OrderStatus.PAID || order.getStatus() == OrderStatus.CANCELED) {
+            log.warn("Tentativa de pagamento rejeitada. O pedido {} já está {}", order.getId(), order.getStatus());
             throw new RuntimeException("Pedido já está finalizado ou cancelado.");
         }
 
         PaymentModel payment = new PaymentModel();
         payment.setOrderId(order.getId());
-        payment.setAmountCents(dto.getAmountCents());
+        payment.setAmountCents(dto.amountCents());
+        payment.setMethod(dto.method());
 
         PaymentModel savedPayment = paymentRepository.save(payment);
+        log.info("Pagamento registrado com sucesso. ID: {}, Valor: {}", savedPayment.getId(), savedPayment.getAmountCents());
 
         List<OrderItemsModel> items = orderItemsRepository.findByOrderId(order.getId());
         long totalOrderCents = items.stream()
@@ -52,7 +63,10 @@ public class PaymentService {
                 .mapToLong(PaymentModel::getAmountCents)
                 .sum();
 
+        log.info("Progresso do pagamento Pedido #{}: Pago={} / Total={}", order.getId(), totalPaidCents, totalOrderCents);
+
         if (totalPaidCents >= totalOrderCents) {
+            log.info("O valor pago cobre o total. Atualizando status do pedido #{} para PAID.", order.getId());
             order.setStatus(OrderStatus.PAID);
             orderRepository.save(order);
         }

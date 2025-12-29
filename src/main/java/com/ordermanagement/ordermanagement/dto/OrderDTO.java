@@ -4,28 +4,44 @@ import com.ordermanagement.ordermanagement.enums.OrderStatus;
 import com.ordermanagement.ordermanagement.model.OrderItemsModel;
 import com.ordermanagement.ordermanagement.model.OrderModel;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-public class OrderDTO {
-    private OrderModel order;
-    private List<OrderItemsModel> items;
-    private Long totalCents;
+public record OrderDTO(
+        Long id,
+        Long customerId,
+        OrderStatus status,
+        LocalDateTime createdAt,
+        Long totalCents,
+        List<OrderItemDTO> items
+) {
 
-    public OrderDTO(OrderModel order, List<OrderItemsModel> items, Long totalCents) {
-        this.order = order;
-        this.items = items;
-        this.totalCents = totalCents;
-    }
+    public record OrderItemDTO(
+            Long productId,
+            int quantity,
+            int unitPriceCents
+    ) {}
 
-    public OrderModel getOrder() {
-        return order;
-    }
+    public static OrderDTO from(OrderModel order, List<OrderItemsModel> items) {
+        long calculatedTotal = items.stream()
+                .mapToLong(item -> (long) item.getUnitPriceCents() * item.getQuantity())
+                .sum();
 
-    public List<OrderItemsModel> getItems() {
-        return items;
-    }
+        List<OrderItemDTO> itemDTOs = items.stream()
+                .map(item -> new OrderItemDTO(
+                        item.getProductId(),
+                        item.getQuantity(),
+                        item.getUnitPriceCents()
+                ))
+                .toList();
 
-    public Long getTotalCents() {
-        return totalCents;
+        return new OrderDTO(
+                order.getId(),
+                order.getCustomerId(),
+                order.getStatus(),
+                order.getCreatedAt(),
+                calculatedTotal,
+                itemDTOs
+        );
     }
 }

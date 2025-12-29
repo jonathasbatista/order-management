@@ -9,11 +9,10 @@ import com.ordermanagement.ordermanagement.model.ProductModel;
 import com.ordermanagement.ordermanagement.repository.OrderItemsRepository;
 import com.ordermanagement.ordermanagement.repository.OrderRepository;
 import com.ordermanagement.ordermanagement.repository.ProductRepository;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,14 +23,15 @@ public class OrderService {
 
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
-    @Autowired
-    private OrderRepository orderRepository;
+    private final OrderRepository orderRepository;
+    private final OrderItemsRepository orderItemsRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private OrderItemsRepository orderItemsRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
+    public OrderService(OrderRepository orderRepository, OrderItemsRepository orderItemsRepository, ProductRepository productRepository) {
+        this.orderRepository = orderRepository;
+        this.orderItemsRepository = orderItemsRepository;
+        this.productRepository = productRepository;
+    }
 
     public List<OrderModel> findAll() {
         log.info("Listando todos os pedidos");
@@ -48,36 +48,31 @@ public class OrderService {
 
         OrderModel order = orderOptional.get();
         List<OrderItemsModel> items = orderItemsRepository.findByOrderId(id);
-        long total = 0;
 
-        for (OrderItemsModel item : items) {
-            total += (long) item.getQuantity() * item.getUnitPriceCents();
-        }
+        log.info("Detalhes do pedido #{} recuperados com sucesso.", id);
 
-        log.info("Detalhes do pedido #{} recuperados com sucesso. Total: {}", id, total);
-
-        return Optional.of(new OrderDTO(order, items, total));
+        return Optional.of(OrderDTO.from(order, items));
     }
 
     @Transactional
     public OrderModel createOrder(CreateOrderDTO dto) {
 
-        log.info("Iniciando criação de pedido para o Cliente ID: {}", dto.getCustomerId());
+        log.info("Iniciando criação de pedido para o Cliente ID: {}", dto.customerId());
 
         OrderModel order = new OrderModel();
-        order.setCustomerId(dto.getCustomerId());
+        order.setCustomerId(dto.customerId());
         order.setStatus(OrderStatus.NEW);
 
         OrderModel savedOrder = orderRepository.save(order);
 
         List<OrderItemsModel> itemsToSave = new ArrayList<>();
 
-        for (CreateOrderDTO.CreateOrderItemDTO itemDto : dto.getItems()) {
+        for (CreateOrderDTO.CreateOrderItemDTO itemDto : dto.items()) {
 
-            ProductModel product = productRepository.findById(itemDto.getProductId())
+            ProductModel product = productRepository.findById(itemDto.productId())
                     .orElseThrow(() -> {
-                        log.error("Erro na criação do pedido: Produto ID {} não existe", itemDto.getProductId());
-                        return new RuntimeException("Produto não encontrado: " + itemDto.getProductId());
+                        log.error("Erro na criação do pedido: Produto ID {} não existe", itemDto.productId());
+                        return new RuntimeException("Produto não encontrado: " + itemDto.productId());
                     });
 
             if (!product.isActive()) {
@@ -88,7 +83,7 @@ public class OrderService {
             OrderItemsModel itemModel = new OrderItemsModel();
             itemModel.setOrderId(savedOrder.getId());
             itemModel.setProductId(product.getId());
-            itemModel.setQuantity(itemDto.getQuantity());
+            itemModel.setQuantity(itemDto.quantity());
             itemModel.setUnitPriceCents(product.getPriceCents());
 
             itemsToSave.add(itemModel);

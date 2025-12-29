@@ -1,46 +1,25 @@
 package com.ordermanagement.ordermanagement.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 import java.util.List;
 
-public class CreateOrderDTO {
+public record CreateOrderDTO(
+        @NotNull(message = "O ID do cliente é obrigatório")
+        Long customerId,
 
-    private Long customerId;
-    private List<CreateOrderItemDTO> items;
+        @NotEmpty(message = "O pedido deve ter pelo menos um item")
+        @Valid
+        List<CreateOrderItemDTO> items
+) {
+    public record CreateOrderItemDTO(
+            @NotNull(message = "O ID do produto é obrigatório")
+            Long productId,
 
-    public Long getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
-    }
-
-    public List<CreateOrderItemDTO> getItems() {
-        return items;
-    }
-
-    public void setItems(List<CreateOrderItemDTO> items) {
-        this.items = items;
-    }
-
-    public static class CreateOrderItemDTO {
-        private Long productId;
-        private int quantity;
-
-        public Long getProductId() {
-            return productId;
-        }
-
-        public void setProductId(Long productId) {
-            this.productId = productId;
-        }
-
-        public int getQuantity() {
-            return quantity;
-        }
-
-        public void setQuantity(int quantity) {
-            this.quantity = quantity;
-        }
-    }
+            @Positive(message = "A quantidade deve ser maior que zero")
+            int quantity
+    ) {}
 }

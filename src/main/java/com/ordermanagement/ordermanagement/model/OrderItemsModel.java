@@ -44,6 +44,14 @@ public class OrderItemsModel implements Serializable {
         return unitPriceCents;
     }
 
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
     public void setOrderId(Long orderId) {
         this.orderId = orderId;
     }

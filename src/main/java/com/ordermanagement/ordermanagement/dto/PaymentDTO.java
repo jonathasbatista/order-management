@@ -1,23 +1,17 @@
 package com.ordermanagement.ordermanagement.dto;
 
-public class PaymentDTO {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
-    private Long orderId;
-    private int amountCents;
+public record PaymentDTO(
+        @NotNull(message = "O ID do pedido é obrigatório")
+        Long orderId,
 
-    public Long getOrderId() {
-        return orderId;
-    }
+        @NotNull(message = "O valor do pagamento é obrigatório")
+        @Positive(message = "O valor do pagamento deve ser maior que zero")
+        int amountCents,
 
-    public void setOrderId(Long orderId) {
-        this.orderId = orderId;
-    }
-
-    public int getAmountCents() {
-        return amountCents;
-    }
-
-    public void setAmountCents(int amountCents) {
-        this.amountCents = amountCents;
-    }
-}
+        @NotBlank(message = "O método de pagamento é obrigatório")
+        String method
+) {}

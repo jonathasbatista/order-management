@@ -27,7 +27,7 @@ public class OrderModel {
         return id;
     }
 
-    public Long getCustomer() {
+    public Long getCustomerId() {
         return customerId;
     }
 
