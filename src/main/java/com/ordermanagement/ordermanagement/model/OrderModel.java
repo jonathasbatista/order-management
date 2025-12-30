@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 public class OrderModel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "customer_id", nullable = false)
@@ -45,9 +45,5 @@ public class OrderModel {
 
     public void setCustomerId(Long customerId) {
         this.customerId = customerId;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 }

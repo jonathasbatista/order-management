@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class PaymentModel implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "order_id", nullable = false)
@@ -58,9 +58,5 @@ public class PaymentModel implements Serializable {
 
     public void setAmountCents(@Min(0) int amountCents) {
         this.amountCents = amountCents;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 }

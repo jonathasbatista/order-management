@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class ProductModel implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, length = 120)
@@ -60,9 +60,5 @@ public class ProductModel implements Serializable {
 
     public void setPriceCents(@Min(0) int priceCents) {
         this.priceCents = priceCents;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 }
