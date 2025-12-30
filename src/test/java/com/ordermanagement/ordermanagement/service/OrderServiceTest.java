@@ -37,7 +37,6 @@ class OrderServiceTest {
     @Test
     void shouldThrowExceptionWhenProductIsInactive() {
         ProductModel inactiveProduct = new ProductModel();
-        inactiveProduct.setId(1L);
         inactiveProduct.setActive(false);
 
         when(productRepository.findById(1L)).thenReturn(Optional.of(inactiveProduct));

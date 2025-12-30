@@ -4,8 +4,9 @@ let currentId = null;
 document.addEventListener('DOMContentLoaded', () => {
     loadList();
     const params = new URLSearchParams(window.location.search);
-    if(params.get('id')){
-     selectOrder(params.get('id'));
+    const urlId = params.get('id');
+    if (urlId) {
+        selectOrder(urlId);
     }
 });
 
@@ -15,91 +16,117 @@ async function loadList() {
     try {
         const res = await fetch(`${API_URL}/orders`);
         const list = await res.json();
+
         list.sort((a, b) => b.id - a.id);
 
-        document.getElementById('ordersList').innerHTML = list.map(o => {
-            let statusStyle = "bg-gray-100 text-gray-500 border-gray-200";
-            if (o.status === 'PAID') {
-                statusStyle = "bg-black text-white border-black";
-            }
-            if (o.status === 'CANCELED') {
-                statusStyle = "bg-transparent text-gray-300 line-through border-transparent";
-            }
-
-            return `
-            <div onclick="selectOrder(${o.id})" class="p-4 rounded-2xl cursor-pointer hover:bg-gray-50 transition-all border border-transparent hover:border-gray-100 group">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="font-bold text-lg group-hover:underline decoration-2 underline-offset-4 decoration-gray-200">#${o.id}</span>
-                    <span class="text-[10px] px-2 py-1 rounded-full font-bold uppercase border ${statusStyle}">${o.status}</span>
+        document.getElementById('ordersList').innerHTML = list.map(o => `
+            <div onclick="selectOrder(${o.id})" class="p-4 mb-2 rounded-xl cursor-pointer bg-white border border-gray-100 hover:border-black hover:shadow-md transition-all">
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-lg">#${o.id}</span>
+                    <span class="text-[10px] px-2 py-1 rounded font-bold uppercase ${getStatusColor(o.status)}">${o.status}</span>
                 </div>
-                <div class="text-xs font-bold text-gray-400">CLIENTE ID: ${o.customerId}</div>
+                <div class="text-xs text-gray-400 mt-2 font-medium">CLIENTE ID: ${o.customerId}</div>
             </div>
-            `;
-        }).join('');
+        `).join('');
     } catch(e) { console.error(e); }
 }
 
+function getStatusColor(status) {
+    if (status === 'PAID') return 'bg-black text-white';
+    if (status === 'CANCELED') return 'bg-red-100 text-red-500 line-through';
+    return 'bg-gray-100 text-gray-600';
+}
+
 async function selectOrder(id) {
-    currentId = id;
-    document.getElementById('emptyState').classList.add('hidden');
-    document.getElementById('detailCard').classList.remove('hidden');
+  if (!id) return;
 
-    try {
-        const res = await fetch(`${API_URL}/orders/${id}`);
-        const data = await res.json();
+  currentId = id;
 
-        document.getElementById('orderId').innerText = `#${data.order.id}`;
-        document.getElementById('orderCustomer').innerText = data.order.customerId;
-        document.getElementById('orderTotal').innerText = formatCurrency(data.totalCents);
+  document.getElementById('emptyState')?.classList.add('hidden');
+  document.getElementById('detailCard').classList.remove('hidden');
 
-        const badge = document.getElementById('orderStatus');
-        badge.innerText = data.order.status;
+  document.getElementById('orderId').innerText = '#';
+  document.getElementById('orderCustomer').innerText = '';
+  document.getElementById('orderStatus').innerText = '';
+  document.getElementById('orderItems').innerHTML = '';
+  document.getElementById('orderTotal').innerText = formatCurrency(0);
+  document.getElementById('paymentArea').classList.add('hidden');
 
-        badge.className = "px-4 py-2 rounded-full text-xs font-bold tracking-widest border uppercase ";
-        if(data.order.status === 'PAID'){
-            badge.className += "bg-black text-white border-black shadow-lg shadow-gray-200";
-        }
-        else if(data.order.status === 'CANCELED'){
-            badge.className += "bg-gray-50 text-gray-400 border-gray-100 line-through";
-        }
-        else{
-            badge.className += "bg-white text-black border-gray-200";
-        }
+  try {
+    const res = await fetch(`${API_URL}/orders/${id}`);
+    if (!res.ok) throw new Error();
 
-        document.getElementById('orderItems').innerHTML = data.items.map(i => `
-            <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
-                <td class="py-4 pl-2 rounded-l-lg font-bold text-gray-900">Prod ${i.productId}</td>
-                <td class="py-4 text-right text-gray-500">${i.quantity}</td>
-                <td class="py-4 text-right pr-2 rounded-r-lg font-bold">${formatCurrency(i.unitPriceCents * i.quantity)}</td>
-            </tr>
-        `).join('');
+    const data = await res.json();
 
-        const payArea = document.getElementById('paymentArea');
-        if(data.order.status !== 'PAID' && data.order.status !== 'CANCELED') {
-            payArea.classList.remove('hidden');
-            document.getElementById('payAmount').value = '';
-        } else {
-            payArea.classList.add('hidden');
-        }
+    document.getElementById('orderId').innerText = `#${data.id}`;
+    document.getElementById('orderCustomer').innerText = data.customerId ?? '—';
 
-    } catch(e) { console.error(e); }
+    const badge = document.getElementById('orderStatus');
+    badge.innerText = data.status;
+    badge.className = `px-4 py-2 rounded-full text-xs font-bold uppercase border ${getStatusColor(data.status)}`;
+
+    const tbody = document.getElementById('orderItems');
+
+    if (Array.isArray(data.items) && data.items.length) {
+      tbody.innerHTML = data.items.map(i => `
+        <tr class="border-b last:border-0">
+          <td class="py-3">${i.productId}</td>
+          <td class="py-3 text-center">${i.quantity}</td>
+          <td class="py-3 text-right font-bold">
+            ${formatCurrency(i.unitPriceCents * i.quantity)}
+          </td>
+        </tr>
+      `).join('');
+    } else {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="3" class="text-center py-6 text-gray-400">
+            Sem itens
+          </td>
+        </tr>
+      `;
+    }
+
+    document.getElementById('orderTotal').innerText = formatCurrency(data.totalCents);
+
+    if (data.status === 'NEW') {
+      document.getElementById('paymentArea').classList.remove('hidden');
+    }
+  } catch {
+    document.getElementById('orderItems').innerHTML = `
+      <tr>
+        <td colspan="3" class="text-center py-6 text-red-400">
+          Erro ao carregar pedido
+        </td>
+      </tr>
+    `;
+  }
 }
 
 async function pay() {
     const val = document.getElementById('payAmount').value;
-    if(!val){
-        return;
-    }
+    if(!val) return alert("Digite um valor para pagar.");
+
+    const body = {
+        orderId: currentId,
+        amountCents: Math.round(parseFloat(val) * 100),
+        method: "CREDIT_CARD"
+    };
 
     try {
         const res = await fetch(`${API_URL}/payments`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ orderId: currentId, amountCents: Math.round(val * 100) })
+            body: JSON.stringify(body)
         });
+
         if(res.ok) {
+            alert("Pagamento registrado com sucesso!");
             selectOrder(currentId);
             loadList();
+        } else {
+            const err = await res.json();
+            alert("Erro: " + (err.message || "Falha no pagamento"));
         }
     } catch(e) { console.error(e); }
 }

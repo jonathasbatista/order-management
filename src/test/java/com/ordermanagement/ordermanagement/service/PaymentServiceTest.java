@@ -39,7 +39,6 @@ class PaymentServiceTest {
     @Test
     void shouldChangeStatusToPaidWhenFullyPaid() {
         OrderModel order = new OrderModel();
-        order.setId(1L);
         order.setStatus(OrderStatus.NEW);
 
         OrderItemsModel item = new OrderItemsModel();
@@ -48,12 +47,12 @@ class PaymentServiceTest {
 
         when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
         when(paymentRepository.save(any())).thenReturn(new PaymentModel());
-        when(itemsRepository.findByOrderId(1L)).thenReturn(List.of(item));
+        when(itemsRepository.findByOrderId(any())).thenReturn(List.of(item));
 
         PaymentModel currentPayment = new PaymentModel();
         currentPayment.setAmountCents(5000);
 
-        when(paymentRepository.findByOrderId(1L)).thenReturn(List.of(currentPayment));
+        when(paymentRepository.findByOrderId(any())).thenReturn(List.of(currentPayment));
 
         PaymentDTO paymentDTO = new PaymentDTO(1L, 5000, "PIX");
 
